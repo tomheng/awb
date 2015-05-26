@@ -1,4 +1,5 @@
 # awb
+[![GoDoc](http://godoc.org/github.com/tomheng/awb?status.svg)](http://godoc.org/github.com/tomheng/awb)
 **awb** is a powerful web bench.
 
 ## Install 
