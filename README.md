@@ -1,5 +1,6 @@
 # awb
-[![GoDoc](http://godoc.org/github.com/tomheng/awb?status.svg)](http://godoc.org/github.com/tomheng/awb)
+[![GoDoc](http://godoc.org/github.com/tomheng/awb?status.svg)](http://godoc.org/github.com/tomheng/awb) [![Build Status](https://img.shields.io/travis/tomheng/awb.svg?style=flat-square)](https://travis-ci.org/tomheng/awb)
+
 **awb** is a powerful web bench.
 
 ## Install 
