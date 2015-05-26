@@ -24,6 +24,7 @@ var (
 	data        = flag.String("d", "", "(HTTP) Sends the specified data in a POST request to the HTTP server")
 	cookie      = flag.String("b", "", "Pass  the  data  to the HTTP server as a cookie")
 	header      = flag.String("H", "", "(HTTP) Extra header to include in the request when sending HTTP to a server")
+	keepAlive   = flag.Bool("k", false, "Use HTTP KeepAlive feature")
 )
 
 const (
@@ -216,6 +217,11 @@ func (hj *httpJob) addCookie(cookie string) {
 	hj.Header.Set("Cookie", cookie)
 }
 
+//enable request keepAlive
+func (hj *httpJob) enableKeepAlive(){
+	hj.Header.Add("Connection", "Keep-Alive")
+}
+
 //do HTTP request
 func (hj *httpJob) perform() jobResult {
 	var contentLength, totalLength int64
@@ -284,6 +290,9 @@ func main() {
 	}
 	if len(*header) > 0 {
 		job.addHeader(*header)
+	}
+	if *keepAlive {
+		job.enableKeepAlive()
 	}
 	//listen signal
 	go func() {
