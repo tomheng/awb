@@ -60,19 +60,7 @@ func main() {
 		*requests = 0
 	}
 	b := newBench(*requests, *concurrency, *timelimit)
-	job := newHttpJob(URL, *timeout)
-	if len(*data) > 0 {
-		job.addPostData(*data)
-	}
-	if len(*cookie) > 0 {
-		job.addCookie(*cookie)
-	}
-	if len(*header) > 0 {
-		job.addHeader(*header)
-	}
-	if *keepAlive {
-		job.enableKeepAlive()
-	}
+	job := newHttpJob(URL, *timeout, *data, *cookie, *header, *keepAlive)
 	//listen signal
 	go func() {
 		c := make(chan os.Signal, 1)

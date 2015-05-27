@@ -20,7 +20,7 @@ type httpJob struct {
 }
 
 //HTTP request job
-func newHttpJob(URL string, timeout int64) *httpJob {
+func newHttpJob(URL string, timeout int64, data, cookie, header string, keepAlive bool) *httpJob {
 	hj := &httpJob{
 		timeout,
 		"GET",
@@ -30,6 +30,18 @@ func newHttpJob(URL string, timeout int64) *httpJob {
 		url.Values{},
 	}
 	hj.Header.Set("User-Agent", SN+"/"+VERSION+" ("+CN+")")
+	if len(data) > 0 {
+		hj.addPostData(data)
+	}
+	if len(cookie) > 0 {
+		hj.addCookie(cookie)
+	}
+	if len(header) > 0 {
+		hj.addHeader(header)
+	}
+	if keepAlive {
+		hj.enableKeepAlive()
+	}
 	return hj
 }
 
