@@ -110,7 +110,8 @@ func (b *bench) stop() {
 	close(b.Jobs)
 }
 
-func (b *bench) processResult(result jobResult) {
+func (b *bench) processResult(result jobResult, wg *sync.WaitGroup) {
+	defer wg.Done()
 	b.Lock()
 	defer b.Unlock()
 	if result.success {
@@ -122,31 +123,29 @@ func (b *bench) processResult(result jobResult) {
 	b.Br.TotalTransferred += result.totalLength
 }
 
+//bench producer
 func (b *bench) produce(job jober) {
 	i := 0
 	for {
-		b.Lock()
 		if b.stoped {
-			b.Unlock()
 			break
 		}
 		if b.Requests > 0 && i >= b.Requests {
-			b.Unlock()
 			b.stop()
 			break
 		}
 		i += 1
 		b.Jobs <- job
-		b.Unlock()
 	}
 }
 
 //concurrency unit
 func (b *bench) consume(wg *sync.WaitGroup) {
+	defer wg.Done()
 	for job := range b.Jobs {
 		//Asynchronous process job result
 		result := job.perform()
-		b.processResult(result)
+		wg.Add(1)
+		go b.processResult(result, wg)
 	}
-	wg.Done()
 }
