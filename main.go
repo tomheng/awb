@@ -17,7 +17,8 @@ var (
 	cookie      = flag.String("b", "", "Pass  the  data  to the HTTP server as a cookie")
 	header      = flag.String("H", "", "(HTTP) Extra header to include in the request when sending HTTP to a server")
 	keepAlive   = flag.Bool("k", false, "Use HTTP KeepAlive feature")
-	version     = flag.Bool("v", false, "Print version number and exit")
+	version     = flag.Bool("V", false, "Print version number and exit")
+	verbose     = flag.Bool("v", false, "Make the operation more talkative")
 )
 
 const (
@@ -59,7 +60,7 @@ func main() {
 	if *timelimit > 0 {
 		*requests = 0
 	}
-	b := newBench(*requests, *concurrency, *timelimit)
+	b := newBench(*requests, *concurrency, *timelimit, *verbose)
 	job := newHttpJob(URL, *timeout, *data, *cookie, *header, *keepAlive)
 	//listen signal
 	go func() {

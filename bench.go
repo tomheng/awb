@@ -16,6 +16,7 @@ type jobResulter interface {
 	isSuccess() bool
 	getTotalLength() int64
 	getContentLength() int64
+	println()
 }
 
 type bench struct {
@@ -25,6 +26,7 @@ type bench struct {
 	Jobs        chan jober
 	Br          *benchResult
 	stoped      bool
+	verbose     bool
 	sync.Mutex
 }
 
@@ -36,7 +38,7 @@ type benchResult struct {
 	FailedCount      int64
 }
 
-func newBench(r, c, t int) *bench {
+func newBench(r, c, t int, v bool) *bench {
 	return &bench{
 		Requests:    r,
 		Concurrency: c,
@@ -44,6 +46,7 @@ func newBench(r, c, t int) *bench {
 		Jobs:        make(chan jober, c*2),
 		Br:          &benchResult{},
 		stoped:      false,
+		verbose:     v,
 	}
 }
 
@@ -108,6 +111,7 @@ func (b *bench) stop() {
 	close(b.Jobs)
 }
 
+//process bench result
 func (b *bench) processResult(result jobResulter, wg *sync.WaitGroup) {
 	defer wg.Done()
 	b.Lock()
@@ -119,6 +123,9 @@ func (b *bench) processResult(result jobResulter, wg *sync.WaitGroup) {
 	}
 	b.Br.HtmlTransferred += result.getContentLength()
 	b.Br.TotalTransferred += result.getTotalLength()
+	if b.verbose {
+		result.println()
+	}
 }
 
 //bench producer

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -124,4 +126,14 @@ func (hjr httpJobResult) getContentLength() int64 {
 		hjr.response.ContentLength = int64(len(body))
 	}
 	return hjr.response.ContentLength
+}
+
+var once sync.Once
+
+//print some help info
+func (hjr httpJobResult) println() {
+	once.Do(func() {
+		fmt.Println("\nproto\tcode\ttotal_bytes\tbody_byte\ttime")
+	})
+	fmt.Printf("%s\t%d\t%v\t%v\t%.4fms\n", hjr.response.Proto, hjr.response.StatusCode, hjr.getContentLength(), hjr.getTotalLength(), hjr.spendTime.Seconds())
 }
