@@ -8,16 +8,14 @@ import (
 
 //job interface
 type jober interface {
-	perform() jobResult
+	perform() jobResulter
 }
 
-//store job Result
-type jobResult struct {
-	success       bool
-	spendTime     time.Duration
-	contentType   string
-	contentLength int64
-	totalLength   int64
+//job result interface
+type jobResulter interface {
+	isSuccess() bool
+	getTotalLength() int64
+	getContentLength() int64
 }
 
 type bench struct {
@@ -110,17 +108,17 @@ func (b *bench) stop() {
 	close(b.Jobs)
 }
 
-func (b *bench) processResult(result jobResult, wg *sync.WaitGroup) {
+func (b *bench) processResult(result jobResulter, wg *sync.WaitGroup) {
 	defer wg.Done()
 	b.Lock()
 	defer b.Unlock()
-	if result.success {
+	if result.isSuccess() {
 		b.Br.SuccessCount += 1
 	} else {
 		b.Br.FailedCount += 1
 	}
-	b.Br.HtmlTransferred += result.contentLength
-	b.Br.TotalTransferred += result.totalLength
+	b.Br.HtmlTransferred += result.getContentLength()
+	b.Br.TotalTransferred += result.getTotalLength()
 }
 
 //bench producer

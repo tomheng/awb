@@ -65,9 +65,7 @@ func (hj *httpJob) enableKeepAlive() {
 }
 
 //do HTTP request
-func (hj *httpJob) perform() jobResult {
-	var contentLength, totalLength int64
-	var contentType string
+func (hj *httpJob) perform() jobResulter {
 	client := http.Client{
 		Timeout: time.Millisecond * time.Duration(hj.timeout),
 	}
@@ -79,23 +77,39 @@ func (hj *httpJob) perform() jobResult {
 	start := time.Now()
 	response, err := client.Do(hr)
 	spendTime := time.Since(start)
-	success := false
-	if err == nil && response.StatusCode == 200 {
-		success = true
-		if response.ContentLength == -1 {
-			body, _ := ioutil.ReadAll(response.Body)
-			response.ContentLength = int64(len(body))
-		}
-		res, _ := httputil.DumpResponse(response, true)
-		totalLength = int64(len(res))
-		contentLength = response.ContentLength
-		contentType = response.Header.Get("Content-Type")
-	}
-	return jobResult{
-		success,
+	return httpJobResult{
 		spendTime,
-		contentType,
-		contentLength,
-		totalLength,
+		response,
 	}
+}
+
+type httpJobResult struct {
+	spendTime time.Duration
+	response  *http.Response
+}
+
+func (hjr httpJobResult) isSuccess() bool {
+	if hjr.response != nil && hjr.response.StatusCode == 200 {
+		return true
+	}
+	return false
+}
+
+func (hjr httpJobResult) getTotalLength() int64 {
+	if !hjr.isSuccess() {
+		return 0
+	}
+	res, _ := httputil.DumpResponse(hjr.response, true)
+	return int64(len(res))
+}
+
+func (hjr httpJobResult) getContentLength() int64 {
+	if !hjr.isSuccess() {
+		return 0
+	}
+	if hjr.response.ContentLength == -1 {
+		body, _ := ioutil.ReadAll(hjr.response.Body)
+		hjr.response.ContentLength = int64(len(body))
+	}
+	return hjr.response.ContentLength
 }
