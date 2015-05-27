@@ -10,7 +10,10 @@ After installing Go and setting up your [GOPATH](http://golang.org/doc/code.html
 go get github.com/tomheng/awb
 ~~~
 
-or you can download binary distribution, untarred it, copy it to you PATH.
+or you can download binary distribution, unzip and copy it to you PATH.
+
+* [Linux 64-bit](http://blog.webfuns.net/awb-linux-64.zip)
+* [OSX 64-bit](http://blog.webfuns.net/awb-osx-64.zip)
 
 ## Start bench
 
@@ -25,3 +28,4 @@ awb -n 10000 -n 100 http://localhost/bench
 * more fast and concurrently
 * HTTP and HTTPS
 * support multi HTTP method(GET,POST et)
+* more control on bench request
