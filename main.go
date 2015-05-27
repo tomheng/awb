@@ -17,6 +17,7 @@ var (
 	cookie      = flag.String("b", "", "Pass  the  data  to the HTTP server as a cookie")
 	header      = flag.String("H", "", "(HTTP) Extra header to include in the request when sending HTTP to a server")
 	keepAlive   = flag.Bool("k", false, "Use HTTP KeepAlive feature")
+	version     = flag.Bool("v", false, "Print version number and exit")
 )
 
 const (
@@ -31,6 +32,10 @@ func usage() {
 	os.Exit(1)
 }
 
+func showVersion() {
+	fmt.Printf("%s version %s (%s distribution)\n", SN, VERSION, runtime.GOOS)
+}
+
 func showError(msg string) {
 	fmt.Println(msg)
 	os.Exit(1)
@@ -39,6 +44,10 @@ func showError(msg string) {
 func main() {
 	flag.Usage = usage
 	flag.Parse()
+	if *version {
+		showVersion()
+		os.Exit(0)
+	}
 	if flag.NArg() != 1 {
 		usage()
 	}
