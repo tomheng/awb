@@ -110,7 +110,7 @@ func (hjr httpJobResult) isSuccess() bool {
 }
 
 func (hjr httpJobResult) getTotalLength() int64 {
-	if !hjr.isSuccess() {
+	if hjr.response == nil {
 		return 0
 	}
 	res, _ := httputil.DumpResponse(hjr.response, true)
@@ -128,6 +128,20 @@ func (hjr httpJobResult) getContentLength() int64 {
 	return hjr.response.ContentLength
 }
 
+func (hjr httpJobResult) getResponseProto() string{
+	if hjr.response == nil {
+		return "no response"
+	}
+	return hjr.response.Proto
+}
+
+func (hjr httpJobResult) getResponseCode() int{
+	if hjr.response == nil {
+		return 0
+	}
+	return hjr.response.StatusCode
+}
+
 var once sync.Once
 
 //print some help info
@@ -136,6 +150,6 @@ func (hjr httpJobResult) String() string {
 	once.Do(func() {
 		line = fmt.Sprintln("\nproto\tcode\ttotal_bytes\tbody_bytes\ttime")
 	})
-	line += fmt.Sprintf("%s\t%d\t%v\t%v\t%.4fms", hjr.response.Proto, hjr.response.StatusCode, hjr.getContentLength(), hjr.getTotalLength(), hjr.spendTime.Seconds())
+	line += fmt.Sprintf("%s\t%d\t%v\t%v\t%.4fms", hjr.getResponseProto(), hjr.getResponseCode(), hjr.getContentLength(), hjr.getTotalLength(), hjr.spendTime.Seconds())
 	return line
 }
