@@ -131,9 +131,11 @@ func (hjr httpJobResult) getContentLength() int64 {
 var once sync.Once
 
 //print some help info
-func (hjr httpJobResult) println() {
+func (hjr httpJobResult) String() string {
+	line := ""
 	once.Do(func() {
-		fmt.Println("\nproto\tcode\ttotal_bytes\tbody_byte\ttime")
+		line = fmt.Sprintln("\nproto\tcode\ttotal_bytes\tbody_bytes\ttime")
 	})
-	fmt.Printf("%s\t%d\t%v\t%v\t%.4fms\n", hjr.response.Proto, hjr.response.StatusCode, hjr.getContentLength(), hjr.getTotalLength(), hjr.spendTime.Seconds())
+	line += fmt.Sprintf("%s\t%d\t%v\t%v\t%.4fms", hjr.response.Proto, hjr.response.StatusCode, hjr.getContentLength(), hjr.getTotalLength(), hjr.spendTime.Seconds())
+	return line
 }

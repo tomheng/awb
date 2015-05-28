@@ -16,7 +16,6 @@ type jobResulter interface {
 	isSuccess() bool
 	getTotalLength() int64
 	getContentLength() int64
-	println()
 }
 
 type bench struct {
@@ -124,7 +123,7 @@ func (b *bench) processResult(result jobResulter, wg *sync.WaitGroup) {
 	b.Br.HtmlTransferred += result.getContentLength()
 	b.Br.TotalTransferred += result.getTotalLength()
 	if b.verbose {
-		result.println()
+		fmt.Println(result)
 	}
 }
 
