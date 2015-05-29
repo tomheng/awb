@@ -24,7 +24,7 @@ type bench struct {
 	Timelimit   int
 	Jobs        chan jober
 	Br          *benchResult
-	stoped      bool
+	stoped      chan bool
 	verbose     bool
 	sync.Mutex
 }
@@ -44,7 +44,7 @@ func newBench(r, c, t int, v bool) *bench {
 		Timelimit:   t,
 		Jobs:        make(chan jober, c*2),
 		Br:          &benchResult{},
-		stoped:      false,
+		stoped:      make(chan bool),
 		verbose:     v,
 	}
 }
@@ -101,13 +101,7 @@ Transfer rate:          %.2f [Kbytes/sec] received
 }
 
 func (b *bench) stop() {
-	b.Lock()
-	defer b.Unlock()
-	if b.stoped {
-		return
-	}
-	b.stoped = true
-	close(b.Jobs)
+	b.stoped <- true
 }
 
 //process bench result
@@ -129,17 +123,19 @@ func (b *bench) processResult(result jobResulter, wg *sync.WaitGroup) {
 
 //bench producer
 func (b *bench) produce(job jober) {
+	defer close(b.Jobs)
 	i := 0
 	for {
-		if b.stoped {
-			break
+		select {
+		case <-b.stoped:
+			return
+		default:
+			if b.Requests > 0 && i >= b.Requests {
+				return
+			}
+			i += 1
+			b.Jobs <- job
 		}
-		if b.Requests > 0 && i >= b.Requests {
-			b.stop()
-			break
-		}
-		i += 1
-		b.Jobs <- job
 	}
 }
 
