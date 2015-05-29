@@ -128,14 +128,14 @@ func (hjr httpJobResult) getContentLength() int64 {
 	return hjr.response.ContentLength
 }
 
-func (hjr httpJobResult) getResponseProto() string{
+func (hjr httpJobResult) getResponseProto() string {
 	if hjr.response == nil {
 		return "no response"
 	}
 	return hjr.response.Proto
 }
 
-func (hjr httpJobResult) getResponseCode() int{
+func (hjr httpJobResult) getResponseCode() int {
 	if hjr.response == nil {
 		return 0
 	}
