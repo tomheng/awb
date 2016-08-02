@@ -20,7 +20,7 @@ or you can download binary distribution, unzip and copy it to you PATH.
 it is very simple using awb to bench a HTTP interface.
 
 ~~~
-awb -n 10000 -n 100 http://localhost/bench
+awb -n 10000 -c 100 http://localhost/bench
 ~~~
 
 ## Features
